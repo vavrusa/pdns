@@ -9,8 +9,12 @@ AC_DEFUN([PDNS_WITH_LUA],[
 
   AS_IF([test "x$with_lua" != "xno"],[
     AS_IF([test "x$with_lua" = "xyes" -o "x$with_lua" = "xauto"],
-      [for LUAPC in lua5.3 lua-5.3 lua53 lua5.2 lua-5.2 lua52 lua5.1 lua-5.1 lua51 lua; do
-         PKG_CHECK_MODULES([LUA], $LUAPC >= 5.1, [
+      [for LUAPC in luajit lua5.3 lua-5.3 lua53 lua5.2 lua-5.2 lua52 lua5.1 lua-5.1 lua51 lua; do
+         case "$LUAPC" in
+         *jit*) LUAVER="2.0" ;;
+         *)     LUAVER="5.1" ;;
+         esac
+         PKG_CHECK_MODULES([LUA], $LUAPC >= $LUAVER, [
            AC_DEFINE([HAVE_LUA], [1], [Define to 1 if you have lua])
            with_lua=yes
          ], [LUAPC=""]) # otherwise pkg_check will fail
@@ -18,7 +22,11 @@ AC_DEFUN([PDNS_WITH_LUA],[
        done
       ],
       [LUAPC="$with_lua"
-        PKG_CHECK_MODULES([LUA], $LUAPC >= 5.1, [
+        case "$LUAPC" in
+        *jit*) LUAVER="2.0" ;;
+        *)     LUAVER="5.1" ;;
+        esac
+        PKG_CHECK_MODULES([LUA], $LUAPC >= $LUAVER, [
           AC_DEFINE([HAVE_LUA], [1], [Define to 1 if you have lua])
           with_lua=yes
         ])
